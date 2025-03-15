@@ -4,6 +4,12 @@ ModulesStructureVersion=1
 Type=Class
 Version=8.45
 @EndOfDesignText@
+#If Documentation
+Updates
+V1.00
+	-Release
+#End If
+
 #DesignerProperty: Key: VisualizationType, DisplayName: Visualization Type, FieldType: String, DefaultValue: Spectrum, List: Spectrum|Waveform|FilledWave
 #DesignerProperty: Key: NumberOfBars, DisplayName: Number of bars, FieldType: Int, DefaultValue: 32, MinRange: 1
 #DesignerProperty: Key: RoundBars, DisplayName: Round Bars, FieldType: Boolean, DefaultValue: True, Description: If True then the bars are round
@@ -210,37 +216,41 @@ Private Sub DrawWaveformBars(fftData() As Double)
 End Sub
 
 Private Sub DrawFilledWaveVisualizer(fftData() As Double)
+	' Clear the entire canvas area.
 	xcvs.ClearRect(xcvs.TargetRect)
 	Dim maxHeight As Float = mBase.Height
-	Dim baseY As Float = mBase.Height   ' Basis: untere Kante
+	Dim baseY As Float = mBase.Height   ' Base: bottom edge
 
 	Dim Path As B4XPath
+	' Initialize the path at the base (bottom) of the canvas.
 	Path.Initialize(0, baseY)
 	For i = 0 To m_NumberOfBars - 1
 		Dim sample As Double = fftData(i)
-		' Noise-Filter und Normalisierung
+		' Noise filtering and normalization.
 		If sample < m_NoiseThreshold Then
 			sample = 0
 		Else
 			sample = (sample - m_NoiseThreshold) / (1 - m_NoiseThreshold)
 		End If
-		' Gaussian Multiplikator
+		' Apply Gaussian multiplier for a more natural curve.
 		Dim exponent As Double = -Power((2 * i / m_NumberOfBars - 1), 2) / 0.2
 		Dim gaussianMultiplier As Double = Power(cE, exponent)
 		sample = sample * gaussianMultiplier
 
 		Dim x As Float = i * (mBase.Width / m_NumberOfBars)
-		' Bei keinem Sound: y = baseY, bei maximalem Sound: y = baseY - (maxHeight * 0.8)
+		' With no sound: y = baseY; with maximum sound: y = baseY - (maxHeight * 0.8)
 		Dim y As Float = baseY - sample * (maxHeight * 0.8)
 		Path.LineTo(x, y)
 	Next
-	' Pfad abschließen, um den Bereich unter der Welle zu füllen
+	' Close the path to fill the area under the wave.
 	Path.LineTo(mBase.Width, baseY)
 	Path.LineTo(0, baseY)
+	' Draw the filled path and its outline.
 	xcvs.DrawPath(Path, m_SecondaryColor, True, 0)
 	xcvs.DrawPath(Path, m_BarColor, False, 2dip)
 	xcvs.Invalidate
 End Sub
+
 
 #End Region
 
