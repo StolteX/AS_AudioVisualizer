@@ -1,3 +1,4 @@
 # AS_AudioVisualizer
 
-![AS_AudioVisualizer](https://github.com/user-attachments/assets/4d9a79b4-9c6c-4f56-856e-674569150492)
+https://github.com/user-attachments/assets/2a3cdd67-5e0d-4da9-84be-582b0487630c
+
